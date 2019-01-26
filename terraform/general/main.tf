@@ -1,9 +1,26 @@
+terraform {
+    backend "s3" {
+        bucket = "noliverio-iac-terraform-backend"
+        key = "state/terraform.tfstate"
+        region = "us-east-1"
+        dynamodb_table = "noliverio-iac-terraform-backend-table"
+#        encrypt = true
+    }
+}
+
 provider "aws" {
     secret_key = "${var.secret_key}"
     access_key = "${var.access_key}"
     region = "${var.region}"
     version = "~> 1.56"
 
+}
+
+module "bootstrap"{
+    source = "./bootstrap"
+    access_key = "${var.access_key}"
+    secret_key = "${var.secret_key}"
+    region = "${var.region}"
 }
 
 module "base_network"{
@@ -13,6 +30,8 @@ module "base_network"{
     region = "${var.region}"
     
 }
+
+
 
 resource "aws_instance" "puppet_master"{
     ami = "ami-0922553b7b0369273"
@@ -29,11 +48,8 @@ resource "aws_instance" "puppet_master"{
         "sudo yum update -y",
         "sudo rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm",
         "sudo yum install -y puppetserver",
-#        "sudo yum install -y puppetdb",
         "sudo yum install -y puppet-agent",
-        "sudo yum install -y puppetdb-termini",
         "sudo systemctl start puppetserver",
-        "sudo systemctl enable puppetserver",
         ]
 
         connection {
