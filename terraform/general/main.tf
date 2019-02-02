@@ -46,6 +46,7 @@ resource "aws_instance" "puppet_master"{
     provisioner "remote-exec"{
         inline = [
         "sudo yum update -y",
+        "sudo yum install -y git",
         "sudo rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm",
         "sudo yum install -y puppetserver",
         "sudo yum install -y puppet-agent",

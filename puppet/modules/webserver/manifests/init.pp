@@ -1,17 +1,18 @@
-class webserver {
+class webserver (
+  $hostname => $facts['hostname'] 
+){
   
   package { 'httpd':
     ensure => 'present',
   }
 
-  $page_hash =  {
-    'host_os' => $facts['os']['family'], 
+  $page_hash = {
+    'hostname' => $hostname,
   }
 
   file { '/var/http/index.html':
-    ensure  =>  'file',
-    content => epp('webserver/index.html.epp', )
-  
+    content => epp('webserver/index.html.epp', $page_hash )
+    notify  => Service['httpd'],
   }
 
   service { 'httpd':

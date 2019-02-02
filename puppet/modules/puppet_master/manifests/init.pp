@@ -1,4 +1,4 @@
-class puppet-master {
+class puppet_master {
 
     package { 'puppetdb' :
         ensure => 'present',
