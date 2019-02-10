@@ -7,12 +7,20 @@ resource "aws_instance" "concourse_server" {
   provisioner "remote-exec" {
     inline = [
       "sudo yum update -y",
+      "sudo yum install -y wget",
+      "sudo yum install -y git",
+      "wget https://github.com/concourse/concourse/releases/download/v4.2.2/concourse_linux_amd64",
+      "chmod 744 concourse_linux_amd64",
     ]
 
     connection {
       type        = "ssh"
-      user        = "ec2-user"
+      user        = "centos"
       private_key = "${file("/home/ec2-user/chef_key.pem")}"
     }
   }
+}
+
+output "concourse_server_dns" {
+  value = "${aws_instance.concourse_server.public_dns}"
 }
