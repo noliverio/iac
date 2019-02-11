@@ -75,8 +75,8 @@ resource "aws_security_group_rule" "allow_all_out" {
 resource "aws_security_group_rule" "allow_ping" {
   type              = "ingress"
   protocol          = "icmp"
-  to_port           = 0
-  from_port         = 0
+  to_port           = -1
+  from_port         = -1
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.webserver.id}"
 }
