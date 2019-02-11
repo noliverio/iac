@@ -4,15 +4,37 @@ provider "aws" {
   region     = "${var.region}"
 }
 
-resource "aws_vpc" "default" {
+resource "aws_vpc" "main" {
   cidr_block = "10.10.0.0/16"
 }
 
-resource "aws_internet_gateway" "default_gateway" {
-  vpc_id = "${aws_vpc.default.id}"
+resource "aws_subnet" "main" {
+  vpc_id                  = "${aws_vpc.main.id}"
+  cidr_block              = "10.10.0.0/24"
+  map_public_ip_on_launch = "true"
 }
 
-resource "aws_security_group" "webserver" {}
+resource "aws_internet_gateway" "main_gateway" {
+  vpc_id = "${aws_vpc.main.id}"
+}
+
+resource "aws_route_table" "public_route_table" {
+  vpc_id = "${aws_vpc.main.id}"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${aws_internet_gateway.main_gateway.id}"
+  }
+}
+
+resource "aws_route_table_association" "main_public_subnet" {
+  subnet_id      = "${aws_subnet.main.id}"
+  route_table_id = "${aws_route_table.public_route_table.id}"
+}
+
+resource "aws_security_group" "webserver" {
+  vpc_id = "${aws_vpc.main.id}"
+}
 
 resource "aws_security_group_rule" "allow_ssh" {
   type              = "ingress"
@@ -50,6 +72,23 @@ resource "aws_security_group_rule" "allow_all_out" {
   security_group_id = "${aws_security_group.webserver.id}"
 }
 
+resource "aws_security_group_rule" "allow_ping" {
+  type              = "ingress"
+  protocol          = "icmp"
+  to_port           = 0
+  from_port         = 0
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.webserver.id}"
+}
+
 output "webserver_sec_group" {
   value = "${aws_security_group.webserver.id}"
+}
+
+output "main_subnet" {
+  value = "${aws_subnet.main.id}"
+}
+
+output "main_vpc" {
+  value = "${aws_vpc.main.id}"
 }
