@@ -1,5 +1,5 @@
 class webserver (
-  $hostname => $facts['hostname'] 
+  $hostname = $facts['hostname'] 
 ){
   
   package { 'httpd':
@@ -11,7 +11,7 @@ class webserver (
   }
 
   file { '/var/http/index.html':
-    content => epp('webserver/index.html.epp', $page_hash )
+    content => epp('webserver/index.html.epp', $page_hash ),
     notify  => Service['httpd'],
   }
 
