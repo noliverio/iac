@@ -11,6 +11,7 @@ class webserver (
   }
 
   file { '/var/http/index.html':
+    ensure = > 'present',
     content => epp('webserver/index.html.epp', $page_hash ),
     notify  => Service['httpd'],
   }

@@ -7,7 +7,7 @@ class ntp {
     source => 'puppet:///modules/ntp/ntp.conf',
   }
 
-  service { 'ntp':
+  service { 'ntpd':
     ensure =>  'running',
   }
 }
