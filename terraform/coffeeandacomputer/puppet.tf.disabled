@@ -10,7 +10,8 @@ resource "aws_instance" "puppetmaster" {
   subnet_id = "${module.base_network.main_subnet}"
 
   root_block_device {
-    volume_size = "10"
+    volume_size           = "10"
+    delete_on_termination = true
   }
 
   provisioner "remote-exec" {
@@ -20,6 +21,10 @@ resource "aws_instance" "puppetmaster" {
       "sudo rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm",
       "sudo yum install -y puppetserver",
       "sudo yum install -y puppet-agent",
+      "sudo chmod 666 /etc/sysconfig/network",
+      "sudo echo 'HOSTNAME=puppet.coffeeandacomputer.com' >> /etc/sysconfig/network",
+      "sudo chmod 644 /etc/sysconfig/network",
+      "hostnamectl set-hostname puppet",
       "sudo systemctl enable puppetserver",
       "sudo systemctl start puppetserver",
       "git clone https://github.com/noliverio/iac.git",
@@ -33,19 +38,29 @@ resource "aws_instance" "puppetmaster" {
   }
 }
 
-resource "aws_instance" "puppet_client" {
+resource "aws_instance" "test_puppet_client" {
   ami                    = "ami-02eac2c0129f6376b"
-  instance_type          = "t2.micro"
+  instance_type          = "t3.micro"
   vpc_security_group_ids = ["${module.base_network.webserver_sec_group}"]
 
   key_name  = "${aws_key_pair.chef_key.key_name}"
   subnet_id = "${module.base_network.main_subnet}"
 
+  provisioner "file" {
+    source      = "setup_files/server_setup.sh"
+    destination = "/home/centos/setup.sh"
+
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      private_key = "${file("/home/ec2-user/chef_key.pem")}"
+    }
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "sudo yum update -y",
-      "sudo rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm",
-      "sudo yum install -y puppet-agent",
+      "sudo chmod 777 /home/centos/setup.sh",
+      "sudo /home/centos/setup.sh puppet-client puppet_managed",
     ]
 
     connection {

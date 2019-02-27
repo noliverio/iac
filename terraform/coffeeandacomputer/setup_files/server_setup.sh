@@ -6,7 +6,7 @@ function set_hostname {
     chmod 666 /etc/sysconfig/network
     echo 'HOSTNAME=$1.coffeeandacomputer.com' >> /etc/sysconfig/network
     chmod 644 /etc/sysconfig/network
-    hostnamectl set-hostname secondary_dns.coffeeandacomputer.com
+    hostnamectl set-hostname $1.coffeeandacomputer.com
 }
 
 function interactive_server {
@@ -17,6 +17,10 @@ function interactive_server {
 function puppet_managed {
     rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
     yum install -y puppet-agent
+}
+
+function cleanup {
+    rm $0
 }
 
 function custom {
@@ -34,7 +38,11 @@ set_hostname $1
 if [ $3 == interactive_server ]
 then
     interactive_server
+elif [ $3 == puppet_managed ]
+then
+    puppet_managed
 fi
 
 custom
 
+cleanup

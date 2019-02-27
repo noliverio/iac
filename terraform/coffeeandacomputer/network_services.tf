@@ -9,21 +9,22 @@ resource "aws_instance" "primary_nameserver" {
   key_name  = "${aws_key_pair.chef_key.key_name}"
   subnet_id = "${module.base_network.main_subnet}"
 
+  provisioner "file" {
+    source      = "setup_files/server_setup.sh"
+    destination = "/home/centos/setup.sh"
+
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      private_key = "${file("/home/ec2-user/chef_key.pem")}"
+    }
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "sudo yum update -y",
-      "sudo yum install -y git",
-      "git clone https://github.com/noliverio/dotfiles.git ~/.dotfiles",
-      "sudo ~/.dotfiles/setup.sh interactive_server",
-      "sudo chmod 666 /etc/sysconfig/network",
-      "sudo echo 'HOSTNAME=primary-dns.coffeeandacomputer.com' >> /etc/sysconfig/network",
-      "sudo chmod 644 /etc/sysconfig/network",
-      "sudo hostnamectl set-hostname primary_dns.coffeeandacomputer.com",
-      "sudo yum install -y bind bind-chroot bind-utils",
+      "sudo chmod 777 /home/centos/setup.sh",
+      "sudo /home/centos/setup.sh primary_dns.coffeeandacomputer.com centos interactive_server ",
     ]
-
-    #      "sudo rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm",
-    #      "sudo yum install -y puppet-agent",
 
     connection {
       type        = "ssh"
@@ -44,21 +45,9 @@ resource "aws_instance" "secondary_nameserver" {
   key_name  = "${aws_key_pair.chef_key.key_name}"
   subnet_id = "${module.base_network.main_subnet}"
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo yum update -y",
-      "sudo yum install -y git",
-      "git clone https://github.com/noliverio/dotfiles.git ~/.dotfiles",
-      "sudo ~/.dotfiles/setup.sh interactive_server",
-      "sudo chmod 666 /etc/sysconfig/network",
-      "sudo echo 'HOSTNAME=secondary-dns.coffeeandacomputer.com' >> /etc/sysconfig/network",
-      "sudo chmod 644 /etc/sysconfig/network",
-      "sudo hostnamectl set-hostname secondary_dns.coffeeandacomputer.com",
-      "sudo yum install -y bind bind-chroot bind-utils",
-    ]
-
-    #      "sudo rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm",
-    #      "sudo yum install -y puppet-agent",
+  provisioner "file" {
+    source      = "setup_files/server_setup.sh"
+    destination = "/home/centos/setup.sh"
 
     connection {
       type        = "ssh"
@@ -66,34 +55,12 @@ resource "aws_instance" "secondary_nameserver" {
       private_key = "${file("/home/ec2-user/chef_key.pem")}"
     }
   }
-}
-
-resource "aws_instance" "caching_nameserver" {
-  ami           = "ami-02eac2c0129f6376b"
-  instance_type = "t3.micro"
-
-  vpc_security_group_ids = ["${module.base_network.webserver_sec_group}",
-    "${aws_security_group.dns_server_security_group.id}",
-  ]
-
-  key_name  = "${aws_key_pair.chef_key.key_name}"
-  subnet_id = "${module.base_network.main_subnet}"
 
   provisioner "remote-exec" {
     inline = [
-      "sudo yum update -y",
-      "sudo yum install -y git",
-      "git clone https://github.com/noliverio/dotfiles.git ~/.dotfiles",
-      "sudo ~/.dotfiles/setup.sh interactive_server",
-      "sudo chmod 666 /etc/sysconfig/network",
-      "sudo echo 'HOSTNAME=caching-dns.coffeeandacomputer.com' >> /etc/sysconfig/network",
-      "sudo chmod 644 /etc/sysconfig/network",
-      "sudo hostnamectl set-hostname caching-dns.coffeeandacomputer.com",
-      "sudo yum install -y bind bind-chroot bind-utils",
+      "sudo chmod 777 /home/centos/setup.sh",
+      "sudo /home/centos/setup.sh secondary_dns.coffeeandacomputer.com centos interactive_server ",
     ]
-
-    #      "sudo rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm",
-    #      "sudo yum install -y puppet-agent",
 
     connection {
       type        = "ssh"
@@ -122,8 +89,4 @@ output "primary_dns_public_ip" {
 
 output "secondary_dns_public_ip" {
   value = "${aws_instance.secondary_nameserver.public_ip}"
-}
-
-output "caching_dns_public_ip" {
-  value = "${aws_instance.caching_nameserver.public_ip}"
 }
