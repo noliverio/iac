@@ -1,0 +1,17 @@
+$ORIGIN coffeeand.localputer.local.
+$TTL 1D
+@   SOA primary-dns.coffeeand.localputer.local. hostmaster.coffeeand.localputer.local. (
+    1           ;serial,  incriment each version
+    21600       ; refresh after 6 hours
+    3600        ; retry after 1 hour
+    604800      ; expire after 1 week
+    86400 )     ; minimum TTL of 1 day;
+;
+    IN NS   primary-dns
+    IN NS   secondary-dns
+;
+primary-dns   IN A    10.10.0.167
+              IN AAAA fe80::c20:abff:fe0c:684a
+secondary-dns IN A    10.10.0.227
+              IN AAAA fe80::c4e:97ff:fe86:15c6
+
