@@ -1,6 +1,6 @@
 class ntp {
   package { 'ntp':
-    ensure => 'present',
+    ensure => 'installed',
   }
 
   file {'/etc/ntp.conf':
