@@ -1,4 +1,4 @@
-class dns {
+class secondary_dns {
   package { "bind":
     ensure => 'installed',
   }

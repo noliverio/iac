@@ -4,9 +4,9 @@
 
 function set_hostname {
     chmod 666 /etc/sysconfig/network
-    echo 'HOSTNAME=$1.coffeeandacomputer.com' >> /etc/sysconfig/network
+    echo "HOSTNAME=$1.coffeeandacomputer.local" >> /etc/sysconfig/network
     chmod 644 /etc/sysconfig/network
-    hostnamectl set-hostname $1.coffeeandacomputer.com
+    hostnamectl set-hostname $1.coffeeandacomputer.local
 }
 
 function interactive_server {
@@ -24,7 +24,10 @@ function cleanup {
 }
 
 function custom {
-#    yum install -y bind bind-chroot bind-utils
+    "yum install -y puppetserver",
+    "systemctl enable puppetserver",
+    "systemctl start puppetserver",
+    "git clone https://github.com/noliverio/iac.git /home/$2/iac",
 }
 
 
