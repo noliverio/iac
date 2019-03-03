@@ -1,10 +1,16 @@
-node 'puppet.ec2.internal' {
+node 'puppet.coffeeandacomputer.local' {
   include puppet_master
   include ntp
 }
 
-node 'dns.ec2.internal' {
-  include dns
+node 'primary-dns.coffeeandacomputer.local' {
+  include primary_dns
   include ntp
-  include puppet_agent
+  include network_default
+}
+
+node 'secondary-dns.coffeeandacomputer.local' {
+  include secondary_dns
+  include ntp
+  include network_default
 }
