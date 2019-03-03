@@ -1,6 +1,7 @@
 node 'puppet.coffeeandacomputer.local' {
   include puppet_master
   include ntp
+  include network_default
 }
 
 node 'primary-dns.coffeeandacomputer.local' {

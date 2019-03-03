@@ -24,7 +24,7 @@ function cleanup {
 }
 
 function custom {
-    yum install -y bind bind-chroot bind-utils
+#    yum install -y bind bind-chroot bind-utils
 }
 
 

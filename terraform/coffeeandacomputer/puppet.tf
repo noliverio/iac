@@ -14,38 +14,6 @@ resource "aws_instance" "puppetmaster" {
     delete_on_termination = true
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo yum update -y",
-      "sudo yum install -y git",
-      "sudo rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm",
-      "sudo yum install -y puppetserver",
-      "sudo yum install -y puppet-agent",
-      "sudo chmod 666 /etc/sysconfig/network",
-      "sudo echo 'HOSTNAME=puppet.coffeeandacomputer.com' >> /etc/sysconfig/network",
-      "sudo chmod 644 /etc/sysconfig/network",
-      "hostnamectl set-hostname puppet",
-      "sudo systemctl enable puppetserver",
-      "sudo systemctl start puppetserver",
-      "git clone https://github.com/noliverio/iac.git",
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = "centos"
-      private_key = "${file("/home/ec2-user/chef_key.pem")}"
-    }
-  }
-}
-
-resource "aws_instance" "test_puppet_client" {
-  ami                    = "ami-02eac2c0129f6376b"
-  instance_type          = "t3.micro"
-  vpc_security_group_ids = ["${module.base_network.webserver_sec_group}"]
-
-  key_name  = "${aws_key_pair.chef_key.key_name}"
-  subnet_id = "${module.base_network.main_subnet}"
-
   provisioner "file" {
     source      = "setup_files/server_setup.sh"
     destination = "/home/centos/setup.sh"
@@ -60,7 +28,22 @@ resource "aws_instance" "test_puppet_client" {
   provisioner "remote-exec" {
     inline = [
       "sudo chmod 777 /home/centos/setup.sh",
-      "sudo /home/centos/setup.sh puppet-client puppet_managed",
+      "sudo /home/centos/setup.sh puppet.coffeeandacomputer.com centos puppet_managed",
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      private_key = "${file("/home/ec2-user/chef_key.pem")}"
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo yum install -y puppetserver",
+      "sudo systemctl enable puppetserver",
+      "sudo systemctl start puppetserver",
+      "git clone https://github.com/noliverio/iac.git",
     ]
 
     connection {
@@ -86,8 +69,4 @@ resource "aws_security_group" "puppet_master_security_group" {
 
 output "puppet_server_ip" {
   value = "${aws_instance.puppetmaster.public_ip}"
-}
-
-output "puppet_client_ip" {
-  value = "${aws_instance.puppet_client.public_ip}"
 }
