@@ -19,7 +19,7 @@ class secondary_dns {
   file { "/var/named/coffeeandacomputer.local.zone":
     ensure   => 'present',
     source => 'puppet:///modules/primary_dns/coffeeandacomputer.local.zone',
-    owener   => 'root',
+    owner   => 'root',
     group    => 'root',
     mode     => '0600',
     selrange => 's0',
