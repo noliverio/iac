@@ -15,8 +15,8 @@ resource "aws_instance" "puppetmaster" {
   }
 
   provisioner "file" {
-    source      = "setup_files/server_setup.sh"
-    destination = "/home/centos/setup.sh"
+    source      = "setup_files"
+    destination = "/home/centos/setup/"
 
     connection {
       type        = "ssh"
@@ -27,8 +27,8 @@ resource "aws_instance" "puppetmaster" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo chmod 777 /home/centos/setup.sh",
-      "sudo /home/centos/setup.sh puppet.coffeeandacomputer.com centos puppet_managed",
+      "sudo chmod 777 /home/centos/setup/server_setup.sh",
+      "sudo /home/centos/setup/server_setup.sh puppet centos puppet_managed",
     ]
 
     connection {

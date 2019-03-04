@@ -24,10 +24,13 @@ function cleanup {
 }
 
 function custom {
-    "yum install -y puppetserver",
-    "systemctl enable puppetserver",
-    "systemctl start puppetserver",
-    "git clone https://github.com/noliverio/iac.git /home/$2/iac",
+    if [ $4 == dns ]
+    then
+        ./dns-server-extras.sh
+    elif [ $4 == puppet ]
+    then
+        ./puppet-server-extras.sh $2
+    fi
 }
 
 
@@ -45,6 +48,8 @@ elif [ $3 == puppet_managed ]
 then
     puppet_managed
 fi
+
+mv ./resolv.conf /etc/resolv.conf
 
 custom
 

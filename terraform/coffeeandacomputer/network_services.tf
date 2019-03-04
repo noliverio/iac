@@ -10,8 +10,8 @@ resource "aws_instance" "primary_nameserver" {
   subnet_id = "${module.base_network.main_subnet}"
 
   provisioner "file" {
-    source      = "setup_files/server_setup.sh"
-    destination = "/home/centos/setup.sh"
+    source      = "setup_files"
+    destination = "/home/centos/setup"
 
     connection {
       type        = "ssh"
@@ -22,8 +22,8 @@ resource "aws_instance" "primary_nameserver" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo chmod 777 /home/centos/setup.sh",
-      "sudo /home/centos/setup.sh primary_dns.coffeeandacomputer.com centos interactive_server ",
+      "sudo chmod 777 /home/centos/setup/server_setup.sh",
+      "sudo /home/centos/setup/server_setup.sh primary-dns centos puppet_managed dns",
     ]
 
     connection {
@@ -46,8 +46,8 @@ resource "aws_instance" "secondary_nameserver" {
   subnet_id = "${module.base_network.main_subnet}"
 
   provisioner "file" {
-    source      = "setup_files/server_setup.sh"
-    destination = "/home/centos/setup.sh"
+    source      = "setup_files"
+    destination = "/home/centos/setup"
 
     connection {
       type        = "ssh"
@@ -58,8 +58,8 @@ resource "aws_instance" "secondary_nameserver" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo chmod 777 /home/centos/setup.sh",
-      "sudo /home/centos/setup.sh secondary_dns.coffeeandacomputer.com centos interactive_server ",
+      "sudo chmod 777 /home/centos/setup/server_setup.sh",
+      "sudo /home/centos/setup/server_setup.sh secondary-dns centos puppet_managed",
     ]
 
     connection {

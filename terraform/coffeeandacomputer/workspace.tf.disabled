@@ -13,8 +13,8 @@ resource "aws_instance" "workspace" {
       "sudo yum install -y git",
       "git clone https://github.com/noliverio/dotfiles.git ~/.dotfiles",
       "sudo ~/.dotfiles/setup.sh interactive_server",
-      "sudo echo 'HOSTNAME=workspace.coffeeandacomputer.com' >> /etc/sysconfig/network",
-      "sudo hostname workspace.coffeeandacomputer.com",
+      "sudo echo 'HOSTNAME=workspace.coffeeandacomputer.local' >> /etc/sysconfig/network",
+      "sudo hostname workspace.coffeeandacomputer.local",
     ]
 
     connection {
