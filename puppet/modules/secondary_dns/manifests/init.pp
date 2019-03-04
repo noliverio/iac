@@ -3,7 +3,7 @@ class secondary_dns {
     ensure => 'installed',
   }
 
-  file { "/var/named/chroot/etc/named.conf":
+  file { "/etc/named.conf":
     ensure   => 'present',
     source => 'puppet:///modules/primary_dns/named.conf',
     owner    => 'root',
