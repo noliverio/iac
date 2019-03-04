@@ -49,7 +49,7 @@ then
     puppet_managed
 fi
 
-mv ./resolv.conf /etc/resolv.conf
+mv /home/$2/setup/resolv.conf /etc/resolv.conf
 
 custom
 
