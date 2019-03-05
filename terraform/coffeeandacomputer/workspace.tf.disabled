@@ -7,14 +7,21 @@ resource "aws_instance" "workspace" {
   key_name  = "${aws_key_pair.chef_key.key_name}"
   subnet_id = "${module.base_network.main_subnet}"
 
+  provisioner "file" {
+    source      = "setup_files"
+    destination = "/home/centos/setup"
+
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      private_key = "${file("/home/ec2-user/chef_key.pem")}"
+    }
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "sudo yum update -y",
-      "sudo yum install -y git",
-      "git clone https://github.com/noliverio/dotfiles.git ~/.dotfiles",
-      "sudo ~/.dotfiles/setup.sh interactive_server",
-      "sudo echo 'HOSTNAME=workspace.coffeeandacomputer.local' >> /etc/sysconfig/network",
-      "sudo hostname workspace.coffeeandacomputer.local",
+      "sudo chmod 777 /home/centos/setup/server_setup.sh",
+      "sudo /home/centos/setup/server_setup.sh workspace centos interactive_server",
     ]
 
     connection {

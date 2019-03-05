@@ -83,6 +83,15 @@ resource "aws_security_group_rule" "allow_dns_lookup" {
   security_group_id = "${aws_security_group.dns_server_security_group.id}"
 }
 
+resource "aws_security_group_rule" "allow_dns_transfer" {
+  type              = "ingress"
+  from_port         = "53"
+  to_port           = "53"
+  protocol          = "tcp"
+  cidr_blocks       = ["10.10.0.0/24"]
+  security_group_id = "${aws_security_group.dns_server_security_group.id}"
+}
+
 output "primary_dns_public_ip" {
   value = "${aws_instance.primary_nameserver.public_ip}"
 }
