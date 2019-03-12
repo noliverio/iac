@@ -18,6 +18,20 @@ resource "aws_internet_gateway" "main_gateway" {
   vpc_id = "${aws_vpc.main.id}"
 }
 
+resource "aws_vpc_dhcp_options" "dns_options" {
+  domain_name         = "coffeeandacomputer.local"
+  domain_name_servers = ["10.10.0.70", "10.10.0.141"]
+
+  tags = {
+    Name = "Coffee and a computer Terraform Managed"
+  }
+}
+
+resource "aws_vpc_dhcp_options_association" "dns_resolver" {
+  vpc_id          = "${aws_vpc.main.id}"
+  dhcp_options_id = "${aws_vpc_dhcp_options.dns_options.id}"
+}
+
 resource "aws_route_table" "public_route_table" {
   vpc_id = "${aws_vpc.main.id}"
 
