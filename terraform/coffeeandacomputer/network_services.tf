@@ -9,6 +9,10 @@ resource "aws_instance" "primary_nameserver" {
   key_name  = "${aws_key_pair.chef_key.key_name}"
   subnet_id = "${module.base_network.main_subnet}"
 
+  tags = {
+    Name = "Primary-Dns"
+  }
+
   provisioner "file" {
     source      = "setup_files"
     destination = "/home/centos/setup"
@@ -44,6 +48,10 @@ resource "aws_instance" "secondary_nameserver" {
 
   key_name  = "${aws_key_pair.chef_key.key_name}"
   subnet_id = "${module.base_network.main_subnet}"
+
+  tags = {
+    Name = "Secondary-Dns"
+  }
 
   provisioner "file" {
     source      = "setup_files"

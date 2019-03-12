@@ -1,4 +1,4 @@
-resource "aws_instance" "workspace" {
+resource "aws_instance" "workstation" {
   ami           = "ami-02eac2c0129f6376b"
   instance_type = "t3.micro"
 
@@ -6,6 +6,10 @@ resource "aws_instance" "workspace" {
 
   key_name  = "${aws_key_pair.chef_key.key_name}"
   subnet_id = "${module.base_network.main_subnet}"
+
+  tags = {
+    Name = "Workspace"
+  }
 
   provisioner "file" {
     source      = "setup_files"
@@ -21,7 +25,7 @@ resource "aws_instance" "workspace" {
   provisioner "remote-exec" {
     inline = [
       "sudo chmod 777 /home/centos/setup/server_setup.sh",
-      "sudo /home/centos/setup/server_setup.sh workspace centos interactive_server",
+      "sudo /home/centos/setup/server_setup.sh workstation centos interactive_server",
     ]
 
     connection {
@@ -32,6 +36,6 @@ resource "aws_instance" "workspace" {
   }
 }
 
-output "workspace_public_ip" {
-  value = "${aws_instance.workspace.public_ip}"
+output "workstation_public_ip" {
+  value = "${aws_instance.workstation.public_ip}"
 }

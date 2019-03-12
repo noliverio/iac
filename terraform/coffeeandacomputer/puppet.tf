@@ -14,6 +14,10 @@ resource "aws_instance" "puppetmaster" {
     delete_on_termination = true
   }
 
+  tags = {
+    Name = "Puppet Master"
+  }
+
   provisioner "file" {
     source      = "setup_files"
     destination = "/home/centos/setup/"
