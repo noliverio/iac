@@ -40,6 +40,7 @@ resource "aws_s3_bucket" "blog_logging_bucket" {
   acl    = "log-delivery-write"
 }
 
+//need to keep this file in the s3 root, if i try to put it in an html folder I would need to set an html folder specific index_document.
 resource "aws_s3_bucket_object" "index_html" {
   bucket       = "${aws_s3_bucket.coffeeandacomputer_blog_bucket.id}"
   key          = "index.html"
@@ -56,7 +57,7 @@ resource "aws_s3_bucket_object" "background_png" {
 
 resource "aws_s3_bucket_object" "style_css" {
   bucket       = "${aws_s3_bucket.coffeeandacomputer_blog_bucket.id}"
-  key          = "resources/style.css"
+  key          = "css/style.css"
   source       = "~/iac/blog/css/style.css"
   content_type = "text/css"
 }
