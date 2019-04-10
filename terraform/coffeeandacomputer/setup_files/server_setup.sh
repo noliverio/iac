@@ -12,6 +12,7 @@ function set_hostname {
 function interactive_server {
     git clone https://github.com/noliverio/dotfiles.git /home/$2/.dotfiles
     /home/$2/.dotfiles/setup.sh interactive_server
+    yum install -y wget #because why not, I always find myself reaching for it.
 }
 
 function puppet_managed {

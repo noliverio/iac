@@ -1,8 +1,10 @@
 resource "aws_instance" "node" {
   ami           = "ami-02eac2c0129f6376b"
-  instance_type = "t2.medium"
+  instance_type = "t3.micro"
 
-  vpc_security_group_ids = ["${module.base_network.webserver_sec_group}"]
+  vpc_security_group_ids = ["${module.base_network.webserver_sec_group}",
+    "${aws_security_group.kubernetes_security_group.id}",
+  ]
 
   key_name  = "${aws_key_pair.chef_key.key_name}"
   subnet_id = "${module.base_network.main_subnet}"
@@ -38,17 +40,17 @@ resource "aws_instance" "node" {
   count = 6
 }
 
-resource "aws_security_group" "kubernetes_security_group" {
-  vpc_id = "${module.base_network.main_vpc}"
+resource "aws_security_group_rule" "allow_kubernetes_communication" {
+  type              = "ingress"
+  from_port         = 6443
+  to_port           = 6443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.kubernetes_security_group.id}"
 }
 
-// For ease's sake allow all communication between k8s nodes.
-resource "aws_security_group_rule" "allow_kubernetes_internode_communication_tcp" {
-  type                     = "ingress"
-  source_security_group_id = "{$aws_security_group.kubernetes_security_group.id}"
-  from_port                = "0"
-  to_port                  = "65535"
-  protocol                 = "tcp"
+resource "aws_security_group" "kubernetes_security_group" {
+  vpc_id = "${module.base_network.main_vpc}"
 }
 
 output "node_public_ip${count.index}" {
