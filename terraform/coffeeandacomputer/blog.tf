@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "coffeeandacomputer_blog_bucket" {
 
   logging {
     target_bucket = "${aws_s3_bucket.blog_logging_bucket.id}"
-    target_prefix = "/coffeeandacomputer"
+    target_prefix = "coffeeandacomputer"
   }
 
   versioning {
@@ -43,6 +43,20 @@ resource "aws_s3_bucket" "blog_logging_bucket" {
 resource "aws_s3_bucket_object" "index_html" {
   bucket       = "${aws_s3_bucket.coffeeandacomputer_blog_bucket.id}"
   key          = "index.html"
-  source       = "~/iac/blog/index.html"
+  source       = "~/iac/blog/html/index.html"
   content_type = "text/html"
+}
+
+resource "aws_s3_bucket_object" "background_png" {
+  bucket       = "${aws_s3_bucket.coffeeandacomputer_blog_bucket.id}"
+  key          = "resources/paper.png"
+  source       = "~/iac/blog/resources/paper.png"
+  content_type = "image/png"
+}
+
+resource "aws_s3_bucket_object" "style_css" {
+  bucket       = "${aws_s3_bucket.coffeeandacomputer_blog_bucket.id}"
+  key          = "resources/style.css"
+  source       = "~/iac/blog/css/style.css"
+  content_type = "text/css"
 }
