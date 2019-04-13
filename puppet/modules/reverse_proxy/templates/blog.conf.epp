@@ -1,0 +1,11 @@
+<%- | String $hostname
+| -%>
+<!- File managed by puppet manual changes will be overwritten ->
+server{
+    listen 443 ssl;
+    server_<%= $hostname%>;
+#    ssl_certificate blog.coffeeandacomputer.com.crt;
+#    ssl_certificate_key blog.coffeeandacomputer.com.key;
+    ssl_protocols TLSv1.1 TLSv1.2;
+
+}
