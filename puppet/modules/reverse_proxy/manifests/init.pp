@@ -1,5 +1,5 @@
 class reverse_proxy(
-  $hostname = $facts['fqdn'],
+  $hostname = $facts['hostname'],
   $destination
 ){
   package { 'epel':
