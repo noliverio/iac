@@ -1,5 +1,6 @@
 class reverse_proxy(
-  $hostname = $facts['hostname']
+  $hostname = $facts['hostname'],
+  $destination
 ){
   package { 'epel':
     ensure => 'present'
@@ -17,7 +18,8 @@ class reverse_proxy(
   }
 
   $config_hash = {
-    'hostname' => $hostname,
+    'hostname'    => $hostname,
+    'destination' => $destination,
   }
 
   file { '/etc/nginx/conf.d/blog.conf':

@@ -18,6 +18,11 @@ resource "aws_s3_bucket" "coffeeandacomputer_blog_bucket" {
   depends_on = ["aws_s3_bucket.blog_logging_bucket"]
 }
 
+resource "aws_s3_bucket" "blog_logging_bucket" {
+  bucket = "coffeeandacomputer-blog-logs"
+  acl    = "log-delivery-write"
+}
+
 resource "aws_s3_bucket_policy" "allow_blog_read" {
   bucket = "${aws_s3_bucket.coffeeandacomputer_blog_bucket.id}"
 
@@ -62,7 +67,7 @@ resource "aws_instance" "reverse_proxy" {
   provisioner "remote-exec" {
     inline = [
       "sudo chmod 777 /home/centos/setup/server_setup.sh",
-      "sudo /home/centos/setup/server_setup.sh blog centos interactive_server",
+      "sudo /home/centos/setup/server_setup.sh blog centos puppet_managed",
     ]
 
     connection {
@@ -73,9 +78,8 @@ resource "aws_instance" "reverse_proxy" {
   }
 }
 
-resource "aws_s3_bucket" "blog_logging_bucket" {
-  bucket = "coffeeandacomputer-blog-logs"
-  acl    = "log-delivery-write"
+resource "aws_eip" "blog_proxy_ip" {
+  instance = "${aws_instance.reverse_proxy.id}"
 }
 
 //need to keep this file in the s3 root, if i try to put it in an html folder I would need to set an html folder specific index_document.
@@ -100,6 +104,6 @@ resource "aws_s3_bucket_object" "style_css" {
   content_type = "text/css"
 }
 
-output "reverse_proxy_dns" {
-  value = "${aws_instance.reverse_proxy.public_dns}"
+output "reverse_proxy_ip" {
+  value = "${aws_eip.blog_proxy_ip.public_ip}"
 }

@@ -2,10 +2,22 @@
 | -%>
 <!- File managed by puppet manual changes will be overwritten ->
 server{
+    server_name <%= $hostname%>;
+    location / {
+        proxy_pass <%= destination%>;
+    }
     listen 443 ssl;
-    server_<%= $hostname%>;
-#    ssl_certificate blog.coffeeandacomputer.com.crt;
-#    ssl_certificate_key blog.coffeeandacomputer.com.key;
     ssl_protocols TLSv1.1 TLSv1.2;
+    ssl_certificate /etc/letsencrypt/live/<%= hostname%>/fullchain.pem
+    ssl_certificate_key /etc/lets/encrypt/live/<%= hostname%>/privkey.pem
+}
 
+server {
+    listen 80;
+    server_name <%= hostname%>;
+    if ($host = <%= hostname%>){
+        return 301 https://$host$request_uri;
+    }
+
+    return 404;
 }

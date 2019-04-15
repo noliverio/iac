@@ -1,6 +1,6 @@
-#!/usr/bin/bash
+#!/bin/bash
 # This script is intended to be run as sudo on initialization of server.
-# Call with the following arguments: hostname, username, (interactive_server/puppet)
+# Call with the following arguments: hostname, username, (interactive_server/puppet_managed)
 
 function set_hostname {
     chmod 666 /etc/sysconfig/network

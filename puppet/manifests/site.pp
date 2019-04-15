@@ -15,3 +15,11 @@ node 'secondary-dns.coffeeandacomputer.local' {
   include ntp
   include network_default
 }
+
+node 'blog.coffeeandacomputer.local' {
+  class{ reverse_proxy:
+    destination => 'http://blog.coffeeandacomputer.com.s3-website-us-east-1.amazonaws.com'
+  }
+  include ntp
+  include network_default
+}
