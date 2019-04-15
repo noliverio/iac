@@ -1,8 +1,9 @@
 class reverse_proxy(
-  $hostname = $facts['hostname'],
+  $hostname = $facts['fqdn'],
   $destination
 ){
   package { 'epel':
+    name   => 'epel-release',
     ensure => 'present'
   }
 
@@ -14,7 +15,11 @@ class reverse_proxy(
   package { 'certbot':
     ensure => 'present',
     require => Package['epel']
-
+  }
+  package { 'certbot-assist':
+    name => 'python2-certbot-nginx',
+    ensure => 'present',
+    require => Package['epel']
   }
 
   $config_hash = {
@@ -25,7 +30,7 @@ class reverse_proxy(
   file { '/etc/nginx/conf.d/blog.conf':
     ensure  => 'present',
     notify  => Service['nginx'],
-    content => epp('blog.conf.epp', $config_hash);
+    content => epp('reverse_proxy/blog.conf.epp', $config_hash);
   }
 
   service { 'nginx':
