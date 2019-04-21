@@ -8,6 +8,7 @@ class ntp {
   }
 
   service { 'ntpd':
-    ensure =>  'running',
+    ensure  => 'running',
+    enable  => true,
   }
 }

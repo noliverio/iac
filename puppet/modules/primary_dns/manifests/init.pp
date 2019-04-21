@@ -30,6 +30,8 @@ class primary_dns {
   }
 
   service { 'named':
-    ensure => 'running',
+    ensure   => 'running',
+    provider => 'systemd',
+    enable => true,
   }
 }
