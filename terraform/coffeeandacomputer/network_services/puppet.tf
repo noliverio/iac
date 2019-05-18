@@ -2,12 +2,12 @@ resource "aws_instance" "puppetmaster" {
   ami           = "ami-02eac2c0129f6376b"
   instance_type = "t2.medium"
 
-  vpc_security_group_ids = ["${module.base_network.webserver_sec_group}",
+  vpc_security_group_ids = ["${var.webserver_sec_group}",
     "${aws_security_group.puppet_master_security_group.id}",
   ]
 
-  key_name  = "${aws_key_pair.chef_key.key_name}"
-  subnet_id = "${module.base_network.main_subnet}"
+  key_name  = "${var.chef_key}"
+  subnet_id = "${var.main_subnet}"
 
   root_block_device {
     volume_size           = "10"
@@ -68,7 +68,7 @@ resource "aws_security_group_rule" "allow_puppet_communication" {
 }
 
 resource "aws_security_group" "puppet_master_security_group" {
-  vpc_id = "${module.base_network.main_vpc}"
+  vpc_id = "${var.main_vpc}"
 }
 
 output "puppet_server_ip" {
