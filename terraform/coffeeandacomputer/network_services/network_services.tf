@@ -2,12 +2,12 @@ resource "aws_instance" "primary_nameserver" {
   ami           = "ami-02eac2c0129f6376b"
   instance_type = "t3.micro"
 
-  vpc_security_group_ids = ["${module.base_network.webserver_sec_group}",
+  vpc_security_group_ids = ["${var.webserver_sec_group}",
     "${aws_security_group.dns_server_security_group.id}",
   ]
 
-  key_name  = "${aws_key_pair.chef_key.key_name}"
-  subnet_id = "${module.base_network.main_subnet}"
+  key_name  = "${var.chef_key}"
+  subnet_id = "${var.main_subnet}"
 
   tags = {
     Name = "Primary_Dns"
@@ -42,12 +42,12 @@ resource "aws_instance" "secondary_nameserver" {
   ami           = "ami-02eac2c0129f6376b"
   instance_type = "t3.micro"
 
-  vpc_security_group_ids = ["${module.base_network.webserver_sec_group}",
+  vpc_security_group_ids = ["${var.webserver_sec_group}",
     "${aws_security_group.dns_server_security_group.id}",
   ]
 
-  key_name  = "${aws_key_pair.chef_key.key_name}"
-  subnet_id = "${module.base_network.main_subnet}"
+  key_name  = "${var.chef_key}"
+  subnet_id = "${var.main_subnet}"
 
   tags = {
     Name = "Secondary_Dns"
@@ -78,52 +78,12 @@ resource "aws_instance" "secondary_nameserver" {
   }
 }
 
-#resource "aws_instance" "cert_server" {
-#  ami           = "ami-02eac2c0129f6376b"
-#  instance_type = "t3.micro"
-#
-#  vpc_security_group_ids = ["${module.base_network.webserver_sec_group}",
-#    "${aws_security_group.cert_server_security_group.id}",
-#  ]
-#
-#  key_name  = "${aws_key_pair.chef_key.key_name}"
-#  subnet_id = "${module.base_network.main_subnet}"
-#
-#  tags = {
-#    Name = "Cert_Server"
-#  }
-#
-#  provisioner "file" {
-#    source      = "setup_files"
-#    destination = "/home/centos/setup"
-#
-#    connection {
-#      type        = "ssh"
-#      user        = "centos"
-#      private_key = "${file("/home/ec2-user/chef_key.pem")}"
-#    }
-#  }
-#
-#  provisioner "remote-exec" {
-#    inline = [
-#      "sudo chmod 777 /home/centos/setup/server_setup.sh",
-#      "sudo /home/centos/setup/server_setup.sh cert-server centos interactive_server",
-#    ]
-#
-#    connection {
-#      type        = "ssh"
-#      user        = "centos"
-#      private_key = "${file("/home/ec2-user/chef_key.pem")}"
-#    }
-#  }
-#}
-
 resource "aws_security_group" "dns_server_security_group" {
-  vpc_id = "${module.base_network.main_vpc}"
+  vpc_id = "${var.main_vpc}"
 }
 
 #resource "aws_security_group" "cert_server_security_group" {
-#  vpc_id = "${module.base_network.main_vpc}"
+#  vpc_id = "${var.main_vpc}"
 #}
 
 resource "aws_security_group_rule" "allow_dns_lookup" {
