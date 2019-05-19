@@ -1,0 +1,8 @@
+[Unit]
+Description=Puppet agent
+
+[Service]
+ExecStart=/opt/puppetlabs/bin/puppet agent
+
+[Install]
+WantedBy=multi-user.target
